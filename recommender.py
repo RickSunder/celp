@@ -1,5 +1,5 @@
 from data import CITIES, BUSINESSES, USERS, REVIEWS, TIPS, CHECKINS
-
+from collections import Counter
 import random
 import pandas as pd
 
@@ -67,5 +67,38 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
         city = random.choice(CITIES)
     return df_BUSINESS 
 
+def similarity(matrix, id1, id2):
+    try:
+        similar = 0
+        bag = []
+        feature1 = matrix[(matrix.index == id1)]['attributes'].item()
+        feature2 = matrix[(matrix.index == id2)]['attributes'].item()
+        
+        for item1 in feature1:
+            bag.append(item1)
+            
+        for item2 in feature2:
+            bag.append(item2)
+            
+        count_bag = Counter(bag)
+        total_words = len(bag)
+        for element in count_bag:
+            if count_bag[element] > 1:
+                similar += count_bag[element]
+        return similar/total_words
+    except ZeroDivisionError:
+        pass
 
-print(recommend(user_id=None, business_id=None, city=None, n=10))
+def sim_matrix(matrix):
+    similarity_matrix = pd.DataFrame(matrix, index = matrix.index, columns = matrix.index)
+    business_ids = similarity_matrix.index
+    for business in business_ids:
+        for business2 in business_ids:
+            similarity_matrix.loc[business][business2] = similarity(matrix, business, business2)
+            if business2 == business:
+                similarity_matrix.loc[business][business2] = 0
+
+    return similarity_matrix
+
+print(sim_matrix(recommend(user_id=None, business_id=None, city=None, n=10)))
+# print(recommend(user_id=None, business_id=None, city=None, n=10))
