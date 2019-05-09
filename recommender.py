@@ -33,8 +33,6 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
     all_attributes = []
     all_categories = []
     
-    
-    categories = []
     for city in BUSINESSES:
         for features in BUSINESSES[city]:
             all_ids.append(features['business_id'])
