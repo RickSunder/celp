@@ -52,7 +52,7 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             all_attributes.append(bag)
 
     
-    df_BUSINESS['business_id'] = all_ids
+    df_BUSINESS = df_BUSINESS.reindex(all_ids)
     df_BUSINESS['name'] = all_names
     df_BUSINESS['city'] = all_cities
     df_BUSINESS['stars'] = all_stars
