@@ -70,4 +70,4 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
     return df_BUSINESS 
 
 
-recommend(user_id=None, business_id=None, city=None, n=10)
+print(recommend(user_id=None, business_id=None, city=None, n=10))
