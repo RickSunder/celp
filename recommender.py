@@ -68,26 +68,26 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
     return df_BUSINESS 
 
 def similarity(matrix, id1, id2):
-    try:
-        similar = 0
-        bag = []
-        feature1 = matrix[(matrix.index == id1)]['attributes'].item()
-        feature2 = matrix[(matrix.index == id2)]['attributes'].item()
+    similar = 0
+    bag = []
+    feature1 = matrix[(matrix.index == id1)]['attributes'].item()
+    feature2 = matrix[(matrix.index == id2)]['attributes'].item()
+    
+    for item1 in feature1:
+        bag.append(item1)
         
-        for item1 in feature1:
-            bag.append(item1)
-            
-        for item2 in feature2:
-            bag.append(item2)
-            
-        count_bag = Counter(bag)
-        total_words = len(bag)
-        for element in count_bag:
-            if count_bag[element] > 1:
-                similar += count_bag[element]
-        return similar/total_words
-    except ZeroDivisionError:
-        pass
+    for item2 in feature2:
+        bag.append(item2)
+        
+    count_bag = Counter(bag)
+    total_words = len(bag)
+    for element in count_bag:
+        if count_bag[element] > 1:
+            similar += count_bag[element]
+    if total_words == 0:
+        return None
+    return similar/total_words
+    
 
 def sim_matrix(matrix):
     similarity_matrix = pd.DataFrame(matrix, index = matrix.index, columns = matrix.index)
