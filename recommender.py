@@ -16,8 +16,8 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
             adress:str
         }
     """
-    
 
+def matrix(user_id=None, business_id=None, city=None, n=10):
     df_BUSINESS = pd.DataFrame()
     
     all_ids = []
@@ -49,6 +49,8 @@ def recommend(user_id=None, business_id=None, city=None, n=10):
                 for element in features['attributes']:
                     if element:
                         bag.append(element)
+            if bag == []:
+                bag = None
             all_attributes.append(bag)
 
     
@@ -100,5 +102,5 @@ def sim_matrix(matrix):
 
     return similarity_matrix
 
-print(sim_matrix(recommend(user_id=None, business_id=None, city=None, n=10)))
+# print(sim_matrix(recommend(user_id=None, business_id=None, city=None, n=10)))
 # print(recommend(user_id=None, business_id=None, city=None, n=10))
