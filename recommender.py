@@ -102,5 +102,4 @@ def sim_matrix(matrix):
 
     return similarity_matrix
 
-# print(sim_matrix(recommend(user_id=None, business_id=None, city=None, n=10)))
-# print(recommend(user_id=None, business_id=None, city=None, n=10))
+
