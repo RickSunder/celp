@@ -4,6 +4,7 @@ import recommender
 from tempfile import mkdtemp
 from flask import Flask, render_template, redirect, request, session, flash
 from flask_session import Session
+from flask import send_from_directory
 
 app = Flask(__name__)
 
@@ -19,9 +20,11 @@ def index():
     # Get current user if logged in
     user = session.get("user")
     user_id = user["user_id"] if user else None
-
-    # Get 10 recommendations
-    recommendations = recommender.recommend(user_id=user_id, n=10)
+    if user_id == None:
+        recommendations = recommender.recommend(user_id=user_id, n=10)
+    else:
+        # Get 10 recommendations
+        recommendations = recommender.recommend2(user_id=user_id, n=10)
 
     # Render
     return render_template("index.html", recommendations=recommendations, user=session.get("user"))
@@ -67,7 +70,7 @@ def business(city, id):
     reviews = data.get_reviews(city=business["city"].lower(), business_id=business["business_id"])
 
     # Get 10 recommendations
-    recommendations = recommender.recommend(user_id=user_id, business_id=id, city=business["city"].lower(), n=10)
+    recommendations = recommender.recommend2(user_id=user_id, business_id=id, city=business["city"].lower(), n=10)
 
     # Render
     return render_template("business.html", business=business, recommendations=recommendations, reviews=reviews, user=user)
