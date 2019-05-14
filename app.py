@@ -6,7 +6,7 @@ from flask import Flask, render_template, redirect, request, session, flash
 from flask_session import Session
 from flask import send_from_directory
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -82,5 +82,5 @@ def send_static(path):
     return send_from_directory("static", path)
 
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     app.run(debug=True)
