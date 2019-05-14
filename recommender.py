@@ -400,3 +400,4 @@ def all_recommendations(matrix, user_id):
             if bus_id not in recommendations:
                 recommendations.append(bus_id)
     return recommendations
+
