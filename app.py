@@ -71,7 +71,7 @@ def business(city, id):
     reviews = data.get_reviews(city=business["city"].lower(), business_id=business["business_id"])
 
     # Get 10 recommendations
-    recommendations = recommender.recommend2(user_id=user_id, business_id=id, city=business["city"].lower(), n=10)
+    recommendations = recommender.recommend3(user_id=user_id, business_id=id, city=business["city"].lower(), n=10)
 
     # Render
     return render_template("business.html", business=business, recommendations=recommendations, reviews=reviews, user=user)
