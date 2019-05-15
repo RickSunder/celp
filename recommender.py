@@ -21,9 +21,7 @@ def recommend3(user_id=None, business_id=None, city=None, n=10):
     return random.sample(top_recomm, n)
 
 def recommend(user_id=None, business_id=None, city=None, n=10):
-    if not city:
-        city = random.choice(CITIES)
-    return random.sample(BUSINESSES[city], n)	
+    return home_logout()
 
 
 def get_matrix():
@@ -214,3 +212,30 @@ def all_recommend(matrix, user_id, business_id):
         city = city.lower()
         top_rec.append(get_business(city, i))
     return top_rec
+
+def home_logout():
+    matrix = get_matrix()
+    category = matrix['categories'].str.split(',').tolist()
+    category_set = set()
+    for x in category:
+        for y in x:
+            category_set.add(y)
+    category_dict = dict()
+    for item in category_set:
+        temp = matrix.copy()
+        check = temp[temp['categories'].str.contains(item)]
+        category_dict[item] = check.index[check['stars'] >= 4.0].tolist()
+        if category_dict[item] == []:
+            category_dict.pop(item)
+    temporary = set(category_dict.keys())
+    randomnizer = random.sample(temporary, 10)
+    rand = []
+    random_business = []
+    for cat in randomnizer:
+        rand.append(random.sample(category_dict[cat], 1))
+    for busi_id in rand:
+        for element in busi_id:
+            city = matrix[(matrix.index == element)]['city'].item()
+            city = city.lower()
+            random_business.append(get_business(city, element)) 
+    return(random_business)
