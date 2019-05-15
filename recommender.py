@@ -177,8 +177,11 @@ def all_recommendations(matrix, user_id):
             if bus_id not in recommendations:
                 recommendations.append(bus_id)
     top_rec = []
+    joe = get_matrix()
     for i in recommendations:
-        top_rec.append(get_business('ambridge', i))
+        city = matrix[(matrix.index == i)]['city'].item()
+        city = city.lower()
+        top_rec.append(get_business(city, i))
     return top_rec
 
 def get_business(city, business_id):
