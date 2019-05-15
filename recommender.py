@@ -15,6 +15,11 @@ def recommend2(user_id=None, business_id=None, city=None, n=10):
     top_recomm = all_recommendations(mat, user_id)
     return random.sample(top_recomm, n)
 
+def recommend3(user_id=None, business_id=None, city=None, n=10):
+    mat = get_matrix()
+    top_recomm = all_recommend(mat, user_id, business_id)
+    return random.sample(top_recomm, n)
+
 def recommend(user_id=None, business_id=None, city=None, n=10):
     if not city:
         city = random.choice(CITIES)
@@ -157,6 +162,7 @@ def user_df():
 def user_reviews(user_id, userdf):
     bus_ids = set()
     user_ids = userdf[(userdf.index == user_id)]
+    user_ids = user_ids[(user_ids['stars'] > 3)]
     for bus_id in user_ids['business_id']:
         bus_ids.add(bus_id)
     return bus_ids
@@ -177,7 +183,6 @@ def all_recommendations(matrix, user_id):
             if bus_id not in recommendations:
                 recommendations.append(bus_id)
     top_rec = []
-    joe = get_matrix()
     for i in recommendations:
         city = matrix[(matrix.index == i)]['city'].item()
         city = city.lower()
@@ -199,3 +204,13 @@ def get_business(city, business_id):
         if business["business_id"] == business_id:
             return business
     raise IndexError(f"invalid business_id {business_id}")
+
+def all_recommend(matrix, user_id, business_id):
+    sim_mat = sim_matrix(matrix)
+    recommendations = recommended_busids(sim_mat, business_id)
+    top_rec = []
+    for i in recommendations:
+        city = matrix[(matrix.index == i)]['city'].item()
+        city = city.lower()
+        top_rec.append(get_business(city, i))
+    return top_rec
