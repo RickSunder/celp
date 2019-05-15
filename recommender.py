@@ -7,6 +7,7 @@ from collections import Counter
 import random
 import pandas as pd
 from collections import Counter
+import data
 
 
 def recommend2(user_id=None, business_id=None, city=None, n=10):
@@ -175,6 +176,23 @@ def all_recommendations(matrix, user_id):
         for bus_id in rec_bus:
             if bus_id not in recommendations:
                 recommendations.append(bus_id)
-    pprint(recommendations)
-    return recommendations
+    top_rec = []
+    for i in recommendations:
+        top_rec.append(get_business('ambridge', i))
+    return top_rec
 
+def get_business(city, business_id):
+    """
+    Given a city name and a business id, return that business's data.
+    Returns a dictionary of the form:
+        {
+            name:str,
+            business_id:str,
+            stars:str,
+            ...
+        }
+    """
+    for business in BUSINESSES[city]:
+        if business["business_id"] == business_id:
+            return business
+    raise IndexError(f"invalid business_id {business_id}")
