@@ -224,7 +224,7 @@ def home_logout():
     for item in category_set:
         temp = matrix.copy()
         check = temp[temp['categories'].str.contains(item)]
-        category_dict[item] = check.index[check['stars'] >= 3.0].tolist()
+        category_dict[item] = check.index[check['stars'] >= 4.0].tolist()
         if category_dict[item] == []:
             category_dict.pop(item)
     temporary = set(category_dict.keys())
