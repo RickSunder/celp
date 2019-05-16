@@ -224,15 +224,18 @@ def home_logout():
     for item in category_set:
         temp = matrix.copy()
         check = temp[temp['categories'].str.contains(item)]
-        category_dict[item] = check.index[check['stars'] >= 4.0].tolist()
+        category_dict[item] = check.index[check['stars'] >= 3.0].tolist()
         if category_dict[item] == []:
             category_dict.pop(item)
     temporary = set(category_dict.keys())
-    randomnizer = random.sample(temporary, 10)
+    randomnizer = random.sample(temporary, 15)
     rand = []
     random_business = []
-    for cat in randomnizer:
-        rand.append(random.sample(category_dict[cat], 1))
+    while len(rand) < 10:
+        for cat in randomnizer:
+            temp = random.sample(category_dict[cat], 1)
+            if temp not in rand:
+                rand.append(temp) 
     for busi_id in rand:
         for element in busi_id:
             city = matrix[(matrix.index == element)]['city'].item()
