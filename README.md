@@ -18,3 +18,7 @@ The static and templates directory contain all html/css/js files.
 `data.py` is responsible for loading and handling the data.
 
 `recommender.py` is the recommendation engine.
+
+In test.py staat een eerste versie van het berekenen van de mse-score
+In test2.py staat de nieuwste versie van het berekenen van de mse-score, gebaseerd op een andere dataset van Glendale (deze dataset is groter)
+In de bijgeleverde notebook staat de code van test2.py, maar hier zijn dan ook meteen de resultaten zichtbaar.
