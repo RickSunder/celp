@@ -213,9 +213,12 @@ def recommended_busids(sim_matrix, business_id):
 
 # Call all the functions to get the best recommendations and return it in a list
 def all_recommendations(matrix, user_id):
+    # Get the similarity matrix, the user dataframe and review list
     sim_mat = sim_matrix(matrix)
     userdf = user_df()
     review_list = user_reviews(user_id, userdf)
+
+    # Get the best recommendations from the review_list
     recommendations = []
     for business_id in review_list:
         rec_bus = recommended_busids(sim_mat, business_id)
@@ -223,6 +226,8 @@ def all_recommendations(matrix, user_id):
             if bus_id not in recommendations:
                 recommendations.append(bus_id)
     top_rec = []
+
+    # Get the information of the best businesses and return it in a dictionary
     for i in recommendations:
         city = matrix[(matrix['busId'] == i)]['city'].item()
         city = city.lower()
@@ -240,9 +245,12 @@ def get_business(city, business_id):
 
 # Call all the functions to get the best recommendations and return it in a list when user clicks on business
 def all_recommend(matrix, user_id, business_id):
+    # Get the similarity matrix and best recommendations based on business id
     sim_mat = sim_matrix(matrix)
     recommendations = recommended_busids(sim_mat, business_id)
     top_rec = []
+
+    # Get the information of the recommended businesses and return it in a dictionary
     for i in recommendations:
         city = matrix[(matrix['busId'] == i)]['city'].item()
         city = city.lower()
@@ -252,12 +260,15 @@ def all_recommend(matrix, user_id, business_id):
 
 # Give a top recommendation based on category on the homepage not logged in
 def home_logout():
+    # Get all the different categories from dataframe by splitting the data in a set
     matrix = get_matrix()
     category = matrix['categories'].str.split(',').tolist()
     category_set = set()
     for x in category:
         for y in x:
             category_set.add(y)
+    
+    # Put all the business ids per categories in a dict with 4 or more stars
     category_dict = dict()
     for item in category_set:
         temp = matrix.copy()
@@ -266,14 +277,20 @@ def home_logout():
         if category_dict[item] == []:
             category_dict.pop(item)
     temporary = set(category_dict.keys())
+
+    # From the category set select 15 random categories
     randomnizer = random.sample(temporary, 15)
     rand = []
     random_business = []
+
+    # Select 10 business ids one per category
     while len(rand) < 10:
         for cat in randomnizer:
             temp = random.sample(category_dict[cat], 1)
             if temp not in rand:
                 rand.append(temp) 
+
+    # Get the information of the businesses and return the dictionary
     for busi_id in rand:
         for element in busi_id:
             city = matrix[(matrix['busId'] == element)]['city'].item()
