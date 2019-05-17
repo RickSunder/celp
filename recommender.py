@@ -138,22 +138,27 @@ def user_df():
 def attribute_similarity(matrix, id1, id2):
     similar = 0
     bag = []
+    # Get all attributes from business
     feature1 = matrix[(matrix['busId'] == id1)]['attributes'].item()
     feature2 = matrix[(matrix['busId'] == id2)]['attributes'].item()
     
+    # Make one list of the features of the businesses
     for item1 in feature1:
         bag.append(item1)
         
     for item2 in feature2:
         bag.append(item2)
-        
+
+    # Count how many words are similar   
     count_bag = Counter(bag)
     total_words = len(bag)
+    # Select all words that are multiple times in the list
     for element in count_bag:
         if count_bag[element] > 1:
             similar += count_bag[element]
     if total_words == 0:
-        return total_words       
+        return total_words  
+    # Return the similarity based on attributes     
     return similar/total_words
 
 
@@ -161,25 +166,31 @@ def attribute_similarity(matrix, id1, id2):
 def categories_similarity(matrix, id1, id2):
     similar = 0
     bag = []
+    # Get all categories from business
     feature1 = matrix[(matrix['busId'] == id1)]['categories'].item()
     feature2 = matrix[(matrix['busId'] == id2)]['categories'].item()
     
+    # Make one list of the categories of the businesses
     for item1 in feature1 or []:
         bag.append(item1)
         
     for item2 in feature2 or []:
         bag.append(item2)
     
+    # If there are no categories make it zero
     if feature1 == None or feature2 == None:
         return 0
-        
+
+    # Count how many words are similar   
     count_bag = Counter(bag)
     total_words = len(bag)
+    # Select all words that are multiple times in the list
     for element in count_bag:
         if count_bag[element] > 1:
             similar += count_bag[element]
     if total_words == 0:
-        return total_words     
+        return total_words  
+    # Return the similarity based on categories   
     return similar/total_words
 
 
