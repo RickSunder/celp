@@ -110,7 +110,6 @@ def review_df():
     df_REVIEWS['review'] = all_reviews
     
     return df_REVIEWS
-df_REVIEWS = review_df()
 
 
 def user_df():
@@ -137,7 +136,6 @@ def user_df():
     
     return df_REVIEWS
 
-df_USERS = user_df()
 
 def attribute_similarity(matrix, id1, id2):
     similar = 0
@@ -221,7 +219,7 @@ def all_recommendations(matrix, user_id):
                 recommendations.append(bus_id)
     top_rec = []
     for i in recommendations:
-        city = matrix[(matrix.index == i)]['city'].item()
+        city = matrix[(matrix['busId'] == i)]['city'].item()
         city = city.lower()
         top_rec.append(get_business(city, i))
     return top_rec
@@ -247,7 +245,7 @@ def all_recommend(matrix, user_id, business_id):
     recommendations = recommended_busids(sim_mat, business_id)
     top_rec = []
     for i in recommendations:
-        city = matrix[(matrix.index == i)]['city'].item()
+        city = matrix[(matrix['busId'] == i)]['city'].item()
         city = city.lower()
         top_rec.append(get_business(city, i))
     return top_rec
