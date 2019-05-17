@@ -10,7 +10,7 @@ from collections import Counter
 import data
 import test
 
-# Recommendations logged in homepage
+""" Recommendations logged in homepage """
 def recommend2(user_id=None, business_id=None, city=None, n=10):
     mat = get_matrix()
     top_recomm = all_recommendations(mat, user_id)
@@ -18,7 +18,7 @@ def recommend2(user_id=None, business_id=None, city=None, n=10):
     return random.sample(top_recomm, n)
 
 
-# Recommendations based on other businesses
+""" Recommendations based on other businesses """
 def recommend3(user_id=None, business_id=None, city=None, n=10):
     mat = get_matrix()
     top_recomm = all_recommend(mat, user_id, business_id)
@@ -26,13 +26,13 @@ def recommend3(user_id=None, business_id=None, city=None, n=10):
     return random.sample(top_recomm, n)
  
 
-# Recommendations random per category on homepage not logged in 
+""" Recommendations random per category on homepage not logged in """
 def recommend(user_id=None, business_id=None, city=None, n=10):
     # Return dictionary of top recommendations based on category
     return home_logout()
 
 
-# Make a matrix of all the businesses their information
+""" Make a matrix of all the businesses their information """
 def get_matrix():
     df_BUSINESS = pd.DataFrame()
     
@@ -82,7 +82,8 @@ def get_matrix():
         city = random.choice(CITIES)
     return df_BUSINESS 
 
-# Make review dataframe
+
+""" Make review dataframe """
 def review_df():
     #create lists that represent columns
     all_bus_ids = []
@@ -109,7 +110,7 @@ def review_df():
     return df_REVIEWS
 
 
-# Make a user dataframe
+""" Make a user dataframe """
 def user_df():
     #create lists that represent columns
     all_bus_ids = []
@@ -134,7 +135,7 @@ def user_df():
     return df_REVIEWS
 
 
-# Get a similarity matrix based on attributes
+""" Get a similarity matrix based on attributes """
 def attribute_similarity(matrix, id1, id2):
     similar = 0
     bag = []
@@ -162,7 +163,7 @@ def attribute_similarity(matrix, id1, id2):
     return similar/total_words
 
 
-# Get a similarity matrix based on categories
+""" Get a similarity matrix based on categories """
 def categories_similarity(matrix, id1, id2):
     similar = 0
     bag = []
@@ -194,10 +195,13 @@ def categories_similarity(matrix, id1, id2):
     return similar/total_words
 
 
-# Make the similarity matrix using the category and attribute matrix
+""" Make the similarity matrix using the category and attribute matrix """
 def sim_matrix(matrix):
+    # Make a similarity matrix dataframe
     similarity_matrix = pd.DataFrame(matrix, index = matrix['busId'], columns = matrix['busId'])
     business_ids = matrix['busId']
+
+    # Calculate the similarity based on the similarity from the attribute and category similarity matrixes
     for business in business_ids:
         for business2 in business_ids:
             similarity_matrix.loc[business][business2] = ((attribute_similarity(matrix, business, business2) * 0.5) + categories_similarity(matrix, business, business2)) 
@@ -206,7 +210,7 @@ def sim_matrix(matrix):
     return similarity_matrix
 
 
-# Returns list of business Id which the user has reviewed
+""" Returns list of business Id which the user has reviewed """
 def user_reviews(user_id, userdf):
     bus_ids = set()
     user_ids = userdf[(userdf['userId'] == user_id)]
@@ -216,13 +220,13 @@ def user_reviews(user_id, userdf):
     return bus_ids
 
 
-# Return list with best business ids with the highest similarity
+""" Return list with best business ids with the highest similarity """
 def recommended_busids(sim_matrix, business_id):   
     best_sim = sim_matrix.nlargest(10, business_id)
     return list(best_sim[business_id].index)
 
 
-# Call all the functions to get the best recommendations and return it in a list
+""" Call all the functions to get the best recommendations and return it in a list """
 def all_recommendations(matrix, user_id):
     # Get the similarity matrix, the user dataframe and review list
     sim_mat = sim_matrix(matrix)
@@ -246,7 +250,7 @@ def all_recommendations(matrix, user_id):
     return top_rec
 
 
-# Get the information of a business based on business id
+""" Get the information of a business based on business id """
 def get_business(city, business_id):
     for business in BUSINESSES[city]:
         if business["business_id"] == business_id:
@@ -254,7 +258,7 @@ def get_business(city, business_id):
     raise IndexError(f"invalid business_id {business_id}")
 
 
-# Call all the functions to get the best recommendations and return it in a list when user clicks on business
+""" Call all the functions to get the best recommendations and return it in a list when user clicks on business """
 def all_recommend(matrix, user_id, business_id):
     # Get the similarity matrix and best recommendations based on business id
     sim_mat = sim_matrix(matrix)
@@ -269,7 +273,7 @@ def all_recommend(matrix, user_id, business_id):
     return top_rec
 
 
-# Give a top recommendation based on category on the homepage not logged in
+""" Give a top recommendation based on category on the homepage not logged in """
 def home_logout():
     # Get all the different categories from dataframe by splitting the data in a set
     matrix = get_matrix()
