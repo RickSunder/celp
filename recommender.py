@@ -8,7 +8,7 @@ import random
 import pandas as pd
 from collections import Counter
 import data
-
+import test
 
 def recommend2(user_id=None, business_id=None, city=None, n=10):
     mat = get_matrix()
@@ -71,7 +71,7 @@ def get_matrix():
             all_attributes.append(bag)
 
 
-    df_BUSINESS = df_BUSINESS.reindex(all_ids)
+    df_BUSINESS['busId'] = all_ids
     df_BUSINESS['name'] = all_names
     df_BUSINESS['city'] = all_cities
     df_BUSINESS['stars'] = all_stars
@@ -86,11 +86,64 @@ def get_matrix():
         city = random.choice(CITIES)
     return df_BUSINESS 
 
+def review_df():
+    #create lists that represent columns
+    all_bus_ids = []
+    all_user_ids = []
+    all_stars = []
+    all_reviews = []
+    #add values from the data to lists
+    for city in REVIEWS:
+        for features in REVIEWS[city]:
+            all_bus_ids.append(features['business_id'])
+            all_stars.append(features['stars'])
+            all_user_ids.append(features['user_id'])
+            all_reviews.append(features['text'])
+            
+    #create dataframe
+    df_REVIEWS = pd.DataFrame()
+    
+    #add all the listvalues to the dataframe
+    df_REVIEWS['userId'] = all_user_ids
+    df_REVIEWS['stars'] = all_stars
+    df_REVIEWS['busId'] = all_bus_ids
+    df_REVIEWS['review'] = all_reviews
+    
+    return df_REVIEWS
+df_REVIEWS = review_df()
+
+
+def user_df():
+    #create lists that represent columns
+    all_bus_ids = []
+    all_user_ids = []
+    all_stars = []
+    #add values from the data to lists
+    for city in REVIEWS:
+        for features in REVIEWS[city]: 
+            if features['user_id'] not in all_user_ids:
+                all_user_ids.append(features['user_id'])
+                all_bus_ids.append(features['business_id'])
+                all_stars.append(features['stars'])
+
+            
+    #create dataframe
+    df_REVIEWS = pd.DataFrame()
+    
+    #add all the listvalues to the dataframe
+    df_REVIEWS['userId'] = all_user_ids
+    df_REVIEWS['stars'] = all_stars
+    df_REVIEWS['busId'] = all_bus_ids
+    
+    return df_REVIEWS
+
+df_USERS = user_df()
+
 def attribute_similarity(matrix, id1, id2):
     similar = 0
     bag = []
-    feature1 = matrix[(matrix.index == id1)]['attributes'].item()
-    feature2 = matrix[(matrix.index == id2)]['attributes'].item()
+    feature1 = matrix[(matrix['busId'] == id1)]['attributes'].item()
+    feature2 = matrix[(matrix['busId'] == id2)]['attributes'].item()
     
     for item1 in feature1:
         bag.append(item1)
@@ -110,14 +163,17 @@ def attribute_similarity(matrix, id1, id2):
 def categories_similarity(matrix, id1, id2):
     similar = 0
     bag = []
-    feature1 = matrix[(matrix.index == id1)]['categories'].item()
-    feature2 = matrix[(matrix.index == id2)]['categories'].item()
+    feature1 = matrix[(matrix['busId'] == id1)]['categories'].item()
+    feature2 = matrix[(matrix['busId'] == id2)]['categories'].item()
     
     for item1 in feature1 or []:
         bag.append(item1)
         
     for item2 in feature2 or []:
         bag.append(item2)
+    
+    if feature1 == None or feature2 == None:
+        return 0
         
     count_bag = Counter(bag)
     total_words = len(bag)
@@ -129,39 +185,22 @@ def categories_similarity(matrix, id1, id2):
     return similar/total_words
 
 def sim_matrix(matrix):
-    similarity_matrix = pd.DataFrame(matrix, index = matrix.index, columns = matrix.index)
-    business_ids = matrix.index
+    similarity_matrix = pd.DataFrame(matrix, index = matrix['busId'], columns = matrix['busId'])
+    business_ids = matrix['busId']
     for business in business_ids:
         for business2 in business_ids:
-            similarity_matrix.loc[business][business2] = (attribute_similarity(matrix, business, business2) * categories_similarity(matrix, business, business2)) 
+            similarity_matrix.loc[business][business2] = ((attribute_similarity(matrix, business, business2) * 0.5) + categories_similarity(matrix, business, business2)) 
             if business2 == business:
                 similarity_matrix.loc[business][business2] = 0
     return similarity_matrix
 
-def user_df():
-    all_bus_ids = []
-    all_user_ids = []
-    all_stars = []
-    all_reviews = []
-    for city in REVIEWS:
-        for features in REVIEWS[city]:
-            all_bus_ids.append(features['business_id'])
-            all_stars.append(features['stars'])
-            all_user_ids.append(features['user_id'])
-            all_reviews.append(features['text'])
-               
-    df_REVIEWS = pd.DataFrame()
-    df_REVIEWS = df_REVIEWS.reindex(all_user_ids)
-    df_REVIEWS['stars'] = all_stars
-    df_REVIEWS['business_id'] = all_bus_ids
-    df_REVIEWS['review'] = all_reviews   
-    return df_REVIEWS
+
 
 def user_reviews(user_id, userdf):
     bus_ids = set()
-    user_ids = userdf[(userdf.index == user_id)]
+    user_ids = userdf[(userdf['userId'] == user_id)]
     user_ids = user_ids[(user_ids['stars'] > 3)]
-    for bus_id in user_ids['business_id']:
+    for bus_id in user_ids['busId']:
         bus_ids.add(bus_id)
     return bus_ids
 
@@ -224,7 +263,7 @@ def home_logout():
     for item in category_set:
         temp = matrix.copy()
         check = temp[temp['categories'].str.contains(item)]
-        category_dict[item] = check.index[check['stars'] >= 4.0].tolist()
+        category_dict[item] = check['busId'][check['stars'] >= 4.0].tolist()
         if category_dict[item] == []:
             category_dict.pop(item)
     temporary = set(category_dict.keys())
@@ -238,7 +277,8 @@ def home_logout():
                 rand.append(temp) 
     for busi_id in rand:
         for element in busi_id:
-            city = matrix[(matrix.index == element)]['city'].item()
+            city = matrix[(matrix['busId'] == element)]['city'].item()
             city = city.lower()
             random_business.append(get_business(city, element)) 
     return(random_business)
+
