@@ -118,6 +118,9 @@ def categories_similarity(matrix, id1, id2):
         
     for item2 in feature2 or []:
         bag.append(item2)
+    
+     if feature1 == None or feature2 == None:
+        return 0
         
     count_bag = Counter(bag)
     total_words = len(bag)
