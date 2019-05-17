@@ -19,6 +19,7 @@ def index():
     # Get current user if logged in
     user = session.get("user")
     user_id = user["user_id"] if user else None
+    # If user is not logged in go to recommendations homepage not logged in
     if user_id == None:
         recommendations = recommender.recommend(user_id=user_id, n=10)
         # Render
