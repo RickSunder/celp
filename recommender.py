@@ -19,7 +19,7 @@ def recommend3(user_id=None, business_id=None, city=None, n=10):
     mat = get_matrix()
     top_recomm = all_recommend(mat, user_id, business_id)
     return random.sample(top_recomm, n)
-
+ 
 def recommend(user_id=None, business_id=None, city=None, n=10):
     return home_logout()
 
